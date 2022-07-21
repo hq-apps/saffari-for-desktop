@@ -3,8 +3,12 @@
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gio, GLib
+gi.require_version('WebKit2', '4.0')
+from gi.repository import Gtk, Gio, GLib, Gdk, GObject, WebKit2
+import threading
+import time
 
+GLib.threads_init()
 
 class EntryWindow(Gtk.Window):
     def __init__(self):
@@ -41,6 +45,10 @@ class EntryWindow(Gtk.Window):
         topbar.pack_start(urlbar, True, True, 0)
 
         hb.pack_start(topbar)
+
+        webView = WebKit2.WebView()
+        self.add(webView)
+        GLib.idle_add(webView.load_uri, 'http://www.google.com')
 
 win = EntryWindow()
 win.connect("destroy", Gtk.main_quit)
