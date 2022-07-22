@@ -2,7 +2,7 @@ from gi.repository import Gtk, Gio, GLib, Gdk, GObject, WebKit2
 
 class Browser(Gtk.Window):
     def __init__(self):
-        super().__init__(title="Entry Demo")
+        super().__init__(title="Saffari for Decstopp")
         self.set_size_request(200, 100)
         self.set_border_width(10)
 
