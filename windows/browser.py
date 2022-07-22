@@ -8,7 +8,6 @@ class Browser(Gtk.Window):
 
         hb = Gtk.HeaderBar()
         hb.set_show_close_button(True)
-        #hb.props.title = "HeaderBar example"
         self.set_titlebar(hb)
 
         topbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
