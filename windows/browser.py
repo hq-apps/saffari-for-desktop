@@ -1,14 +1,19 @@
+from traceback import print_tb
+from typing_extensions import Self
 from gi.repository import Gtk, Gio, GLib, Gdk, GObject, WebKit2
+from windows import tab
+from windows.tab import BrowserTab
 
 class Browser(Gtk.Window):
     def __init__(self):
         super().__init__(title="Saffari for Decstopp")
-        self.set_size_request(200, 100)
         self.set_border_width(10)
 
         hb = Gtk.HeaderBar()
         hb.set_show_close_button(True)
         self.set_titlebar(hb)
+
+        self.set_size_request(1200, 900)
 
         topbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
@@ -31,6 +36,14 @@ class Browser(Gtk.Window):
         backbtnbox.add(forwardbtn)
         self.forwardbtn = forwardbtn
 
+        newtabbtn = Gtk.Button()
+        newtabbtn.add(
+            Gtk.Arrow(arrow_type=Gtk.ArrowType.RIGHT, shadow_type=Gtk.ShadowType.NONE)
+        )
+        newtabbtn.connect("clicked", self._new_tab)
+        backbtnbox.add(newtabbtn)
+        self.newtabbtn = newtabbtn
+
         topbar.pack_start(backbtnbox, True, True, 0)
 
         urlbar = Gtk.Entry()
@@ -39,11 +52,30 @@ class Browser(Gtk.Window):
 
         hb.pack_start(topbar)
 
-        webView = WebKit2.WebView()
-        self.add(webView)
-        webView.connect("load-changed", self.load)
-        self.webView = webView
-        GLib.idle_add(webView.load_uri, 'http://www.google.com')
+        self.notebook = Gtk.Notebook()
+        self.add(self.notebook)
+        
+
+        self.tabs = []
+
+        self._new_tab("a")
+
+    def _new_tab(self, _):
+        tabID = len(self.tabs)
+        self.tabs.append(BrowserTab())
+        print(str(self.tabs))
+        self.notebook.append_page(self.tabs[tabID], Gtk.Label(label="New Tab " + str(tabID)))
+        self.notebook.show()
+        print(tabID)
+
+    def _tab_changed(self, notebook, current_page, index):
+        if not index:
+            return
+        title = self.tabs[index].webview.get_title()
+        if title:
+            self.set_title(title)
+        self.activeTab = self.tabs[index]
+    
 
     def goBack(self, button):
         self.webView.go_back()
