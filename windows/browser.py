@@ -54,34 +54,40 @@ class Browser(Gtk.Window):
 
         self.notebook = Gtk.Notebook()
         self.add(self.notebook)
-        
+        self.notebook.connect("switch-page", self._tab_changed)
 
         self.tabs = []
 
         self._new_tab("a")
 
+        self.activeTab = self.tabs[0]
+        self.notebook.set_tab_reorderable(self.tabs[0], True)
+
     def _new_tab(self, _):
         tabID = len(self.tabs)
-        self.tabs.append(BrowserTab())
+        tab = BrowserTab(tabID)
+        self.tabs.append(tab)
         print(str(self.tabs))
         self.notebook.append_page(self.tabs[tabID], Gtk.Label(label="New Tab " + str(tabID)))
-        self.notebook.show()
+        self.notebook.show_all()
+        self.notebook.set_tab_reorderable(tab, True)
         print(tabID)
 
     def _tab_changed(self, notebook, current_page, index):
-        if not index:
-            return
-        title = self.tabs[index].webview.get_title()
-        if title:
-            self.set_title(title)
-        self.activeTab = self.tabs[index]
+        #if not index:
+        #    return
+        #title = self.tabs[index].webview.get_title()
+        #if title:
+        #    self.set_title(title)
+        self.activeTab = current_page
     
+        print(current_page.tabId)
 
     def goBack(self, button):
-        self.webView.go_back()
+        self.activeTab.webView.go_back()
     
     def goForward(self, button):
-        self.webView.go_forward()
+        self.activeTab.webView.go_forward()
 
     def load(self, _, __):
         if self.webView.can_go_back():
